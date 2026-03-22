@@ -47,7 +47,7 @@ class Main:
         self.SEUIL_HAUTEUR_PERMISIF = 0.04
         self.SEUIL_POUCE = 0.03
         self.SEUIL_DECALAGE_INDEX = 0.1
-        self.SEUIL_SUPPRIMER = 0.37
+        self.SEUIL_SUPPRIMER = 0.4
 
         # pour le texte
         self.DELAY_TOUCHES = 0.45

@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import tkinter
 import claviers.clavier as clavier
 import claviers.main as main_clavier
 
@@ -23,18 +24,15 @@ class App:
         self.texte = ""
         
 
-
         # les instances
         self.clavier = clavier.Clavier()
         self.main_droite = main_clavier.Main("droite")
         self.main_gauche = main_clavier.Main("gauche")
 
 
-
-        # la boucle
-        self.boucle()
+        self.boucle()   # la boucle
         
-        self.arreter()
+        self.arreter()  # un arret propre
             
 
 
@@ -43,15 +41,10 @@ class App:
     def boucle(self):
         """ fonction de la boucle principale """
         while self.clavier.en_cours:
+            self.texte = ""         # on vide le texte
+
             reussi, image = self.camera.read()          # on lit l'image de la camera
             image = cv2.flip(image, 1)                  # retourner l'image parce que sinon c chiant
-
-
-            # on affiche seulement le texte parce qu'on est pas encore en prod
-            cv2.putText(image, self.texte[-10:], (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-            #cv2.imshow("Frame", image)  # on affiche la frame
-            cv2.waitKey(1)              # on attend une touche pour quitter (on ne se sert pas de ça mais sinon ca marhe pas)
 
 
             if not reussi:
@@ -81,13 +74,19 @@ class App:
                     # si c'est la droite
                     image = self.main_droite.update(image, main)
 
-                    # actions speciales
-                    if self.main_droite.touche == "retour":
-                        self.texte = self.texte[:-1]
-                    else:
-                        self.texte += self.main_droite.touche
+                    # la touche
+                    self.texte += self.main_droite.touche
 
-            cv2.imshow("Frame", image)  # on affiche la frame
+
+            # transmetre les touches
+            # si c'est une touche speciale
+            if self.texte == "retour":
+                self.clavier.supprimer()
+            
+            # si c'est un texte
+            else:
+                for lettre in self.texte:
+                    self.clavier.touche(lettre)
 
 
 
@@ -97,7 +96,6 @@ class App:
         """ arrete le programme """
         self.camera.release()
         cv2.destroyAllWindows()
-
 
 
 
